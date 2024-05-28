@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "color.hpp"
+#include "snake.hpp"
 #include "window.hpp"
 
 constexpr int WINDOW_WIDTH = 640;

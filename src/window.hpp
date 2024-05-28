@@ -1,3 +1,6 @@
+#ifndef __WINDOW__
+#define __WINDOW__
+
 #include <SDL2/SDL.h>
 
 #include <memory>
@@ -26,3 +29,5 @@ private:
 
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> sdlWindow;
 };
+
+#endif

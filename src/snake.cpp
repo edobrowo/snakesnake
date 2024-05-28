@@ -1,65 +1,83 @@
 #include "snake.hpp"
 
+#include <cassert>
 #include <random>
 
-using namespace game;
+namespace game {
 
-constexpr size_t BOARD_INIT_WIDTH = 10;
-constexpr size_t BOARD_INIT_HEIGHT = 10;
+    constexpr size_t BOARD_INIT_WIDTH = 10;
+    constexpr size_t BOARD_INIT_HEIGHT = 10;
 
-constexpr Pos SNAKE_INIT_HEAD = Pos(1, 1);
-constexpr Pos SNAKE_INIT_TAIL = Pos(1, 3);
+    constexpr Pos SNAKE_INIT_HEAD = Pos(1, 3);
+    constexpr Pos SNAKE_INIT_TAIL = Pos(1, 1);
+    constexpr Direction SNAKE_INIT_DIR = Direction::Right;
 
-constexpr Direction SNAKE_INIT_DIR = Direction::Right;
-
-std::vector<Pos> increments = {Pos(0, 1), Pos(0, -1), Pos(-1, 0), Pos(1, 0)};
-
-Snake::Snake()
-    : board{Board<Direction>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT)},
-      head{SNAKE_INIT_HEAD},
-      tail{SNAKE_INIT_TAIL} {
-    // TODO : make a FoodGenerator class to wrap this
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 6);
-}
-
-void Snake::update() {
-    head += increments[static_cast<size_t>(board(head))];
-
-    if (!board.inBounds(head)) {
-        // TODO : return false or make a game over callback
-        return;
+    Snake::Snake()
+        : board{Board<Direction>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT, Direction::None)},
+          head{SNAKE_INIT_HEAD},
+          tail{SNAKE_INIT_TAIL},
+          foodGenerator{BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT} {
+        // TODO : eh
+        assert(head.x == tail.x && head.x < board.width() && head.y > tail.y && tail.y > 0);
+        for (size_t y = tail.y; y <= head.y; ++y) {
+            board(head.x, y) = SNAKE_INIT_DIR;
+        }
     }
 
-    if (head == food) {
-        spawnFood();
-    } else {
-        tail += increments[static_cast<size_t>(board(tail))];
+    const Board<Direction>& Snake::boardState() const {
+        return board;
     }
-}
 
-void Snake::setDirection(const Direction dir) {
-    if (dir != board(head) &&
-        validDirectionChange(board(head), dir)) {
-        board(head) = dir;
+    void Snake::update() {
+        head += increments[static_cast<size_t>(board(head))];
+
+        if (!board.inBounds(head)) {
+            // TODO : return false or make a game over callback
+            return;
+        }
+
+        if (head == food) {
+            food = foodGenerator.spawnFood(board);
+        } else {
+            tail += increments[static_cast<size_t>(board(tail))];
+        }
     }
-}
 
-void Snake::spawnFood() {
-    // TODO : use the FoodGenerator
-}
-
-bool Snake::validDirectionChange(Direction old_dir, Direction new_dir) {
-    switch (old_dir) {
-    case Direction::Up:
-        return new_dir != Direction::Down;
-    case Direction::Down:
-        return new_dir != Direction::Up;
-    case Direction::Left:
-        return new_dir != Direction::Right;
-    case Direction::Right:
-        return new_dir != Direction::Left;
+    void Snake::setDirection(const Direction dir) {
+        if (dir != board(head) &&
+            validDirectionChange(board(head), dir)) {
+            board(head) = dir;
+        }
     }
-    return false;
+
+    bool Snake::validDirectionChange(Direction old_dir, Direction new_dir) {
+        switch (old_dir) {
+        case Direction::Up:
+            return new_dir != Direction::Down;
+        case Direction::Down:
+            return new_dir != Direction::Up;
+        case Direction::Left:
+            return new_dir != Direction::Right;
+        case Direction::Right:
+            return new_dir != Direction::Left;
+        default:
+            return false;
+        }
+        return false;
+    }
+
+    FoodGenerator::FoodGenerator(size_t width, size_t height) : boardWidth{width} {
+        std::random_device dev;
+        rng = Engine(dev());
+        dist = Dist(0, width * height - 1);
+    }
+
+    Pos FoodGenerator::spawnFood(const Board<Direction>& board) const {
+        Pos sample_pos;
+        do {
+            size_t val = static_cast<size_t>(dist(rng));
+            sample_pos = Pos(val % boardWidth, val / boardWidth);
+        } while (board(sample_pos) != Direction::None);
+        return sample_pos;
+    }
 }

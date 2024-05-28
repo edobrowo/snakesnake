@@ -1,3 +1,6 @@
+#ifndef __COLOR__
+#define __COLOR__
+
 #include <SDL2/SDL.h>
 
 class Color {
@@ -24,3 +27,5 @@ private:
     float b;
     float a;
 };
+
+#endif

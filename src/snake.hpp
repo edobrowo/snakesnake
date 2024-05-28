@@ -1,33 +1,51 @@
+#ifndef __GAME_SNAKE__
+#define __GAME_SNAKE__
+
+#include <random>
 #include <vector>
 
 #include "board.hpp"
+#include "direction.hpp"
 
 namespace game {
+    class FoodGenerator {
+    public:
+        using Engine = std::mt19937;
+        using Dist = std::uniform_int_distribution<size_t>;
 
-    enum class Direction {
-        Up = 0,
-        Down = 1,
-        Left = 2,
-        Right = 3
+        FoodGenerator(size_t width, size_t height);
+        Pos spawnFood(const Board<Direction>& board) const;
+
+    private:
+        size_t boardWidth;
+        mutable Engine rng;
+        mutable Dist dist;
     };
 
     class Snake {
     public:
         Snake();
 
+        const Board<Direction>& boardState() const;
         void update();
         void setDirection(const Direction dir);
 
+        // params
+        // float tilesPerSecond;  // TODO
+        // int sizeIncrease;      // TODO
+
     private:
-        void spawnFood();
         static bool validDirectionChange(Direction old_dir, Direction new_dir);
 
         Board<Direction> board;
-        Pos food;
-        Pos tail;
         Pos head;
+        Pos tail;
 
-        float speed;
-        int sizeIncrease;
+        FoodGenerator foodGenerator;
+        Pos food;
+
+        const std::vector<Pos> increments = {Pos(0, 1), Pos(0, -1), Pos(-1, 0), Pos(1, 0)};
     };
 }
+
+#endif
