@@ -67,6 +67,9 @@ int main(int argc, char* argv[]) {
 
     window.update();
 
+    // https://lazyfoo.net/tutorials/SDL/07_texture_loading_and_rendering/index.php
+    // https://lazyfoo.net/tutorials/SDL/08_geometry_rendering/index.php
+
     SDL_Event event_buffer;
     bool quit = false;
     while (!quit) {
