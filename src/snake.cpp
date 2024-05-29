@@ -1,6 +1,7 @@
 #include "snake.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace game {
 
@@ -42,6 +43,7 @@ namespace game {
     }
 
     void Snake::setDirection(const Direction dir) {
+        std::cout << static_cast<int>(dir) << std::endl;
         if (dir != board(head) &&
             validDirectionChange(board(head), dir)) {
             board(head) = dir;

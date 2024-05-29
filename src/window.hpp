@@ -10,6 +10,7 @@ class SDL_WindowDeleter {
 public:
     void operator()(SDL_Window* window) const {
         if (window) {
+            SDL_FreeSurface(SDL_GetWindowSurface(window));
             SDL_DestroyWindow(window);
         }
     }
