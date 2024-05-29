@@ -40,25 +40,10 @@ Color Color::operator=(const Color& other) {
     return Color(other);
 }
 
-uint32_t Color::toRGB32() const {
-    uint8_t r = static_cast<uint8_t>(255 * this->r);
-    uint8_t g = static_cast<uint8_t>(255 * this->g);
-    uint8_t b = static_cast<uint8_t>(255 * this->b);
-    uint8_t a = static_cast<uint8_t>(255 * this->a);
-
-    uint32_t color = 0;
-    color += r << 24;
-    color += g << 16;
-    color += b << 8;
-    color += a;
-
-    return color;
-}
-
-Uint32 Color::toSDL_RGB(SDL_PixelFormat* pf) const {
-    Uint8 r = static_cast<Uint8>(255 * this->r);
-    Uint8 g = static_cast<Uint8>(255 * this->g);
-    Uint8 b = static_cast<Uint8>(255 * this->b);
+Uint32 toSDL_RGB(const Color& color, SDL_PixelFormat* pf) {
+    Uint8 r = static_cast<Uint8>(255 * color.r);
+    Uint8 g = static_cast<Uint8>(255 * color.g);
+    Uint8 b = static_cast<Uint8>(255 * color.b);
 
     return SDL_MapRGB(pf, r, g, b);
 }

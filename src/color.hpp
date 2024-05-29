@@ -18,14 +18,12 @@ public:
     Color(const Color& other);
     Color operator=(const Color& other);
 
-    uint32_t toRGB32() const;
-    Uint32 toSDL_RGB(SDL_PixelFormat* pf) const;
-
-private:
     float r;
     float g;
     float b;
     float a;
 };
+
+Uint32 toSDL_RGB(const Color& color, SDL_PixelFormat* pf);
 
 #endif

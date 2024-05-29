@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
     Color color = Color(255, 255, 255);
     SDL_Surface* screen_surface = window.surface();
-    SDL_FillRect(screen_surface, NULL, color.toSDL_RGB(screen_surface->format));
+    SDL_FillRect(screen_surface, NULL, toSDL_RGB(color, screen_surface->format));
 
     window.update();
 

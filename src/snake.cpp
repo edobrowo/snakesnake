@@ -1,12 +1,11 @@
 #include "snake.hpp"
 
 #include <cassert>
-#include <random>
 
 namespace game {
 
-    constexpr size_t BOARD_INIT_WIDTH = 10;
-    constexpr size_t BOARD_INIT_HEIGHT = 10;
+    constexpr int BOARD_INIT_WIDTH = 10;
+    constexpr int BOARD_INIT_HEIGHT = 10;
 
     constexpr Pos SNAKE_INIT_HEAD = Pos(1, 3);
     constexpr Pos SNAKE_INIT_TAIL = Pos(1, 1);
@@ -17,9 +16,8 @@ namespace game {
           head{SNAKE_INIT_HEAD},
           tail{SNAKE_INIT_TAIL},
           foodGenerator{BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT} {
-        // TODO : eh
         assert(head.x == tail.x && head.x < board.width() && head.y > tail.y && tail.y > 0);
-        for (size_t y = tail.y; y <= head.y; ++y) {
+        for (Pos::Coord y = tail.y; y <= head.y; ++y) {
             board(head.x, y) = SNAKE_INIT_DIR;
         }
     }
@@ -29,7 +27,7 @@ namespace game {
     }
 
     void Snake::update() {
-        head += increments[static_cast<size_t>(board(head))];
+        head += increments[static_cast<Pos::Coord>(board(head))];
 
         if (!board.inBounds(head)) {
             // TODO : return false or make a game over callback
@@ -39,7 +37,7 @@ namespace game {
         if (head == food) {
             food = foodGenerator.spawnFood(board);
         } else {
-            tail += increments[static_cast<size_t>(board(tail))];
+            tail += increments[static_cast<Pos::Coord>(board(tail))];
         }
     }
 
@@ -66,16 +64,17 @@ namespace game {
         return false;
     }
 
-    FoodGenerator::FoodGenerator(size_t width, size_t height) : boardWidth{width} {
+    FoodGenerator::FoodGenerator(Board<Direction>::Size width, Board<Direction>::Size height)
+        : boardWidth{width} {
         std::random_device dev;
         rng = Engine(dev());
-        dist = Dist(0, width * height - 1);
+        dist = Distribution(0, width * height - 1);
     }
 
     Pos FoodGenerator::spawnFood(const Board<Direction>& board) const {
         Pos sample_pos;
         do {
-            size_t val = static_cast<size_t>(dist(rng));
+            Pos::Coord val = dist(rng);
             sample_pos = Pos(val % boardWidth, val / boardWidth);
         } while (board(sample_pos) != Direction::None);
         return sample_pos;

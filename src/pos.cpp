@@ -1,4 +1,4 @@
-#include "board.hpp"
+#include "pos.hpp"
 
 #include <vector>
 

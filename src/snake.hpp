@@ -6,20 +6,21 @@
 
 #include "board.hpp"
 #include "direction.hpp"
+#include "pos.hpp"
 
 namespace game {
     class FoodGenerator {
     public:
         using Engine = std::mt19937;
-        using Dist = std::uniform_int_distribution<size_t>;
+        using Distribution = std::uniform_int_distribution<Pos::Coord>;
 
-        FoodGenerator(size_t width, size_t height);
+        FoodGenerator(Board<Direction>::Size width, Board<Direction>::Size height);
         Pos spawnFood(const Board<Direction>& board) const;
 
     private:
-        size_t boardWidth;
+        Board<Direction>::Size boardWidth;
         mutable Engine rng;
-        mutable Dist dist;
+        mutable Distribution dist;
     };
 
     class Snake {
