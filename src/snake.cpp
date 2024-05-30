@@ -8,7 +8,7 @@ namespace game {
     constexpr int BOARD_INIT_WIDTH = 10;
     constexpr int BOARD_INIT_HEIGHT = 10;
 
-    constexpr Pos SNAKE_INIT_HEAD = Pos(1, 3);
+    constexpr Pos SNAKE_INIT_HEAD = Pos(3, 1);
     constexpr Pos SNAKE_INIT_TAIL = Pos(1, 1);
     constexpr Direction SNAKE_INIT_DIR = Direction::Right;
 
@@ -16,11 +16,10 @@ namespace game {
         : board{Board<Direction>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT, Direction::None)},
           head{SNAKE_INIT_HEAD},
           tail{SNAKE_INIT_TAIL},
-          foodGenerator{BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT} {
-        assert(head.x == tail.x && head.x < board.width() && head.y > tail.y && tail.y > 0);
-        for (Pos::Coord y = tail.y; y <= head.y; ++y) {
-            board(head.x, y) = SNAKE_INIT_DIR;
-        }
+          headDir{SNAKE_INIT_DIR},
+          foodGenerator{BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT},
+          snakeAlive{true} {
+        reset();
     }
 
     const Board<Direction>& Snake::boardState() const {
@@ -28,25 +27,52 @@ namespace game {
     }
 
     void Snake::update() {
-        head += increments[static_cast<Pos::Coord>(board(head))];
+        Pos new_head = head;
+        new_head += increments[static_cast<size_t>(headDir)];
 
-        if (!board.inBounds(head)) {
-            // TODO : return false or make a game over callback
+        if (!board.inBounds(new_head) || board(new_head) != Direction::None) {
+            snakeAlive = false;
             return;
         }
+
+        board(head) = headDir;
+        board(new_head) = headDir;
+        head = new_head;
 
         if (head == food) {
             food = foodGenerator.spawnFood(board);
         } else {
-            tail += increments[static_cast<Pos::Coord>(board(tail))];
+            Pos new_tail = tail;
+            new_tail += increments[static_cast<Pos::Coord>(board(tail))];
+            board(tail) = Direction::None;
+            tail = new_tail;
         }
     }
 
+    bool Snake::isAlive() const {
+        return snakeAlive;
+    }
+
     void Snake::setDirection(const Direction dir) {
-        if (dir != board(head) &&
-            validDirectionChange(board(head), dir)) {
-            board(head) = dir;
+        if (dir != headDir &&
+            validDirectionChange(headDir, dir)) {
+            headDir = dir;
         }
+    }
+
+    const Pos Snake::foodPos() const {
+        return food;
+    }
+
+    void Snake::reset() {
+        assert(head.x > tail.x && head.x < board.width() && head.y == tail.y && tail.y > 0);
+
+        board.fill(Direction::None);
+
+        for (Pos::Coord x = tail.x; x <= head.x; ++x) {
+            board(x, head.y) = SNAKE_INIT_DIR;
+        }
+        snakeAlive = true;
     }
 
     bool Snake::validDirectionChange(Direction old_dir, Direction new_dir) {

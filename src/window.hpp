@@ -21,12 +21,15 @@ public:
     Window(const std::string& title, unsigned int width, unsigned int height);
 
     void update();
-    SDL_Surface* surface() const;
+    SDL_Window* windowPtr() const;
+    SDL_Surface* surfacePtr() const;
+    int width() const;
+    int height() const;
 
 private:
     std::string title;
-    unsigned int width;
-    unsigned int height;
+    unsigned int winWidth;
+    unsigned int winHeight;
 
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> sdlWindow;
 };

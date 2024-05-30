@@ -1,14 +1,12 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
 #include <iostream>
-#include <map>
+#include <memory>
 
-#include "color.hpp"
-#include "player_action.hpp"
+#include "event_handling.hpp"
+#include "renderer.hpp"
 #include "snake.hpp"
-#include "snake_controller.hpp"
 #include "window.hpp"
 
 constexpr int WINDOW_WIDTH = 640;
@@ -26,26 +24,44 @@ void close() noexcept {
     SDL_Quit();
 }
 
-const std::map<SDL_Keycode, game::PlayerAction> actionMapping =
-    {{SDLK_UP, game::PlayerAction::moveUp},
-     {SDLK_w, game::PlayerAction::moveUp},
-     {SDLK_DOWN, game::PlayerAction::moveDown},
-     {SDLK_s, game::PlayerAction::moveDown},
-     {SDLK_LEFT, game::PlayerAction::moveLeft},
-     {SDLK_a, game::PlayerAction::moveLeft},
-     {SDLK_RIGHT, game::PlayerAction::moveRight},
-     {SDLK_d, game::PlayerAction::moveRight},
-     {SDLK_ESCAPE, game::PlayerAction::quit}};
+Uint32 toSDL_RGB(const Color& color, SDL_PixelFormat* pf) {
+    Uint8 r = static_cast<Uint8>(255 * color.r);
+    Uint8 g = static_cast<Uint8>(255 * color.g);
+    Uint8 b = static_cast<Uint8>(255 * color.b);
 
-game::PlayerAction handleEvent(const SDL_Event& event) noexcept {
-    if (event.type == SDL_QUIT) {
-        return game::PlayerAction::quit;
-    } else if (event.type == SDL_KEYDOWN) {
-        if (actionMapping.find(event.key.keysym.sym) != actionMapping.end()) {
-            return actionMapping.at(event.key.keysym.sym);
+    return SDL_MapRGB(pf, r, g, b);
+}
+
+std::ostream& operator<<(std::ostream& os, const game::Snake& snake) {
+    int h = snake.boardState().height();
+    int w = snake.boardState().width();
+    for (game::Pos::Coord y = 0; y < h; ++y) {
+        for (game::Pos::Coord x = 0; x < w; ++x) {
+            if (game::Pos(x, y) == snake.foodPos()) {
+                os << 'F';
+                continue;
+            }
+            const game::Direction dir = snake.boardState()(x, y);
+            switch (dir) {
+            case game::Direction::Up:
+                os << 'U';
+                break;
+            case game::Direction::Down:
+                os << 'D';
+                break;
+            case game::Direction::Left:
+                os << 'L';
+                break;
+            case game::Direction::Right:
+                os << 'R';
+                break;
+            default:
+                os << '.';
+            }
         }
+        os << '\n';
     }
-    return game::PlayerAction::invalid;
+    return os;
 }
 
 int main(int argc, char* argv[]) {
@@ -57,28 +73,44 @@ int main(int argc, char* argv[]) {
     }
 
     game::Snake snake = game::Snake();
-    game::SnakeController sc = game::SnakeController();
+
+    // std::shared_ptr<Window> window;  // TODO : double free lol
+    // std::unique_ptr<Renderer> renderer;
+    // try {
+    //     window = std::make_shared<Window>("smake snake", WINDOW_WIDTH, WINDOW_HEIGHT);
+    //     renderer = std::make_unique<Renderer>(window.get());
+    // } catch (const std::runtime_error& e) {
+    //     std::cerr << e.what() << "\n";
+    //     return 1;
+    // }
 
     Window window = Window("smake snake", WINDOW_WIDTH, WINDOW_HEIGHT);
 
     Color color = Color(255, 255, 255);
-    SDL_Surface* screen_surface = window.surface();
+    SDL_Surface* screen_surface = window.surfacePtr();
     SDL_FillRect(screen_surface, NULL, toSDL_RGB(color, screen_surface->format));
 
     window.update();
-
-    // https://lazyfoo.net/tutorials/SDL/07_texture_loading_and_rendering/index.php
-    // https://lazyfoo.net/tutorials/SDL/08_geometry_rendering/index.php
 
     SDL_Event event_buffer;
     bool quit = false;
     while (!quit) {
         while (SDL_PollEvent(&event_buffer)) {
-            game::PlayerAction action = handleEvent(event_buffer);
+            game::PlayerAction action = events::processPlayerEvent(event_buffer);
             if (action == game::PlayerAction::quit) {
                 quit = true;
             }
-            sc.handleAction(action, snake);
+            events::performAction(action, snake);
+
+            if (action != game::PlayerAction::quit && action != game::PlayerAction::invalid) {
+                snake.update();
+                if (!snake.isAlive()) {
+                    std::cout << "game over" << std::endl;
+                    quit = true;
+                } else {
+                    std::cout << snake << std::endl;
+                }
+            }
         }
     }
 

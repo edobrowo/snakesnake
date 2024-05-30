@@ -1,7 +1,5 @@
 #include "color.hpp"
 
-#include <SDL2/SDL.h>
-
 float unit_clamp(float x) {
     if (x < 0.0)
         return 0.0;
@@ -38,12 +36,4 @@ Color::Color(const Color& other)
 
 Color Color::operator=(const Color& other) {
     return Color(other);
-}
-
-Uint32 toSDL_RGB(const Color& color, SDL_PixelFormat* pf) {
-    Uint8 r = static_cast<Uint8>(255 * color.r);
-    Uint8 g = static_cast<Uint8>(255 * color.g);
-    Uint8 b = static_cast<Uint8>(255 * color.b);
-
-    return SDL_MapRGB(pf, r, g, b);
 }
