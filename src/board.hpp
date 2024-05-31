@@ -62,7 +62,7 @@ namespace game {
 
     template <class T>
     bool Board<T>::inBounds(const Pos& pos) const {
-        return pos.x < boardWidth && pos.y < boardHeight;
+        return 0 <= pos.x && pos.x < boardWidth && 0 <= pos.y && pos.y < boardHeight;
     }
 
     template <class T>

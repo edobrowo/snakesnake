@@ -18,6 +18,8 @@ public:
     }
 };
 
+class Window;
+
 class Renderer {
 public:
     Renderer(Window* win);
@@ -25,11 +27,12 @@ public:
     void render(const game::Snake& snake);
 
 private:
-    void drawRectArea(int x, int y, int w, int h, Color color);
+    void drawRectArea(int x, int y, int w, int h, const Color& color);
     void clear(Color color);
 
-    std::shared_ptr<Window> window;
     std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> renderer;
+    int windowWidth;
+    int windowHeight;
 
     Color snakeColor;
     Color boardColor;

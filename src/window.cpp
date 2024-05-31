@@ -16,20 +16,20 @@ Window::Window(const std::string& title, unsigned int width, unsigned int height
     sdlWindow.reset(win);
 }
 
-void Window::update() {
-    int err = SDL_UpdateWindowSurface(sdlWindow.get());
-    if (err != 0) {
-        std::string message = std::string("Failed to update SDL window") + SDL_GetError();
-        throw std::runtime_error(message);
-    }
-}
-
 SDL_Window* Window::windowPtr() const {
     return sdlWindow.get();
 }
 
 SDL_Surface* Window::surfacePtr() const {
     return SDL_GetWindowSurface(sdlWindow.get());
+}
+
+void Window::setRenderer(Renderer ren) {
+    renderer = std::make_unique<Renderer>(std::move(ren));
+}
+
+Renderer& Window::rendererRef() {
+    return *renderer.get();
 }
 
 int Window::width() const {

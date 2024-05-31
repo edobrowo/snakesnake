@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "renderer.hpp"
+
 class SDL_WindowDeleter {
 public:
     void operator()(SDL_Window* window) const {
@@ -16,13 +18,16 @@ public:
     }
 };
 
+class Renderer;
+
 class Window {
 public:
     Window(const std::string& title, unsigned int width, unsigned int height);
 
-    void update();
     SDL_Window* windowPtr() const;
     SDL_Surface* surfacePtr() const;
+    void setRenderer(Renderer renderer);
+    Renderer& rendererRef();
     int width() const;
     int height() const;
 
@@ -32,6 +37,7 @@ private:
     unsigned int winHeight;
 
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> sdlWindow;
+    std::unique_ptr<Renderer> renderer;
 };
 
 #endif

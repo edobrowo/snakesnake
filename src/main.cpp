@@ -5,13 +5,13 @@
 #include <memory>
 #include <variant>
 
+#include "color.hpp"
 #include "event_handling.hpp"
-#include "renderer.hpp"
 #include "snake.hpp"
 #include "window.hpp"
 
 constexpr int WINDOW_WIDTH = 640;
-constexpr int WINDOW_HEIGHT = 480;
+constexpr int WINDOW_HEIGHT = 640;
 
 void init() {
     int err = SDL_Init(SDL_INIT_VIDEO);
@@ -80,32 +80,27 @@ int main(int argc, char* argv[]) {
 
     game::Snake snake = game::Snake();
 
-    // std::shared_ptr<Window> window;  // TODO : double free lol
-    // std::unique_ptr<Renderer> renderer;
-    // try {
-    //     window = std::make_shared<Window>("smake snake", WINDOW_WIDTH, WINDOW_HEIGHT);
-    //     renderer = std::make_unique<Renderer>(window.get());
-    // } catch (const std::runtime_error& e) {
-    //     std::cerr << e.what() << "\n";
-    //     return 1;
-    // }
+    std::unique_ptr<Window> window;
+    try {
+        window = std::make_unique<Window>("smake snake", WINDOW_WIDTH, WINDOW_HEIGHT);
+        window->setRenderer(Renderer(window.get()));
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << "\n";
+        return 1;
+    }
 
-    Window window = Window("smake snake", WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    Color color = Color(255, 255, 255);
-    SDL_Surface* screen_surface = window.surfacePtr();
-    SDL_FillRect(screen_surface, NULL, toSDL_RGB(color, screen_surface->format));
-
-    window.update();
+    Renderer& renderer = window->rendererRef();
 
     SDL_Event event_buffer;
     bool quit = false;
+    renderer.render(snake);
     while (!quit) {
         while (SDL_PollEvent(&event_buffer)) {
             game::PlayerAction action = events::processPlayerEvent(event_buffer);
             if (action == game::PlayerAction::quit) {
                 quit = true;
             }
+
             events::performAction(action, snake);
 
             if (action != game::PlayerAction::quit && action != game::PlayerAction::invalid) {
@@ -114,7 +109,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "game over" << std::endl;
                     quit = true;
                 } else {
-                    std::cout << snake << std::endl;
+                    renderer.render(snake);
                 }
             }
         }
