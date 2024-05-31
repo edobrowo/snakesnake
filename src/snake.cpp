@@ -13,7 +13,7 @@ namespace game {
     constexpr Direction SNAKE_INIT_DIR = Direction::Right;
 
     Snake::Snake()
-        : board{Board<Direction>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT, Direction::None)},
+        : board{Board<Cell>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT, Cell{Empty{}})},
           head{SNAKE_INIT_HEAD},
           tail{SNAKE_INIT_TAIL},
           headDir{SNAKE_INIT_DIR},
@@ -22,14 +22,14 @@ namespace game {
         reset();
     }
 
-    const Board<Direction>& Snake::boardState() const {
+    const Board<Cell>& Snake::boardState() const {
         return board;
     }
 
     void Snake::update() {
-        Pos new_head = head + increments[static_cast<size_t>(headDir)];
+        Pos new_head{head + increments[static_cast<size_t>(headDir)]};
 
-        if (!board.inBounds(new_head) || board(new_head) != Direction::None) {
+        if (!board.inBounds(new_head) || !std::get_if<game::Empty>(&board(new_head))) {
             snakeAlive = false;
             return;
         }
@@ -41,8 +41,9 @@ namespace game {
         if (head == food) {
             food = foodGenerator.spawnFood(board);
         } else {
-            Pos new_tail = tail + increments[static_cast<Pos::Coord>(board(tail))];
-            board(tail) = Direction::None;
+            SnakeBody snake_body = std::get<SnakeBody>(board(tail));
+            Pos new_tail{tail + increments[static_cast<Pos::Coord>(snake_body.direction)]};
+            board(tail) = Cell{Empty{}};
             tail = new_tail;
         }
     }
@@ -64,12 +65,14 @@ namespace game {
     void Snake::reset() {
         assert(head.x > tail.x && head.x < board.width() && head.y == tail.y && tail.y > 0);
 
-        board.fill(Direction::None);
+        board.fill(Cell{Empty{}});
 
         for (Pos::Coord x = tail.x; x <= head.x; ++x) {
             board(x, head.y) = SNAKE_INIT_DIR;
         }
+
         snakeAlive = true;
+        food = foodGenerator.spawnFood(board);
     }
 
     bool Snake::validDirectionChange(Direction old_dir, Direction new_dir) {
@@ -88,19 +91,19 @@ namespace game {
         return false;
     }
 
-    FoodGenerator::FoodGenerator(Board<Direction>::Size width, Board<Direction>::Size height)
+    FoodGenerator::FoodGenerator(Board<Cell>::Size width, Board<Cell>::Size height)
         : boardWidth{width} {
         std::random_device dev;
         rng = Engine(dev());
         dist = Distribution(0, width * height - 1);
     }
 
-    Pos FoodGenerator::spawnFood(const Board<Direction>& board) const {
+    Pos FoodGenerator::spawnFood(const Board<Cell>& board) const {
         Pos sample_pos;
         do {
             Pos::Coord val = dist(rng);
             sample_pos = Pos(val % boardWidth, val / boardWidth);
-        } while (board(sample_pos) != Direction::None);
+        } while (!std::get_if<game::Empty>(&board(sample_pos)));
         return sample_pos;
     }
 }

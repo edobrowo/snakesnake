@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "board.hpp"
-#include "direction.hpp"
+#include "cell.hpp"
 #include "pos.hpp"
 
 namespace game {
@@ -14,11 +14,11 @@ namespace game {
         using Engine = std::mt19937;
         using Distribution = std::uniform_int_distribution<Pos::Coord>;
 
-        FoodGenerator(Board<Direction>::Size width, Board<Direction>::Size height);
-        Pos spawnFood(const Board<Direction>& board) const;
+        FoodGenerator(Board<Cell>::Size width, Board<Cell>::Size height);
+        Pos spawnFood(const Board<Cell>& board) const;
 
     private:
-        Board<Direction>::Size boardWidth;
+        Board<Cell>::Size boardWidth;
         mutable Engine rng;
         mutable Distribution dist;
     };
@@ -27,7 +27,7 @@ namespace game {
     public:
         Snake();
 
-        const Board<Direction>& boardState() const;
+        const Board<Cell>& boardState() const;
         void update();
         bool isAlive() const;
         void setDirection(const Direction dir);
@@ -37,7 +37,7 @@ namespace game {
         void reset();
         static bool validDirectionChange(Direction old_dir, Direction new_dir);
 
-        Board<Direction> board;
+        Board<Cell> board;
         Pos head;
         Pos tail;
         Direction headDir;

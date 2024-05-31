@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <variant>
 
 #include "event_handling.hpp"
 #include "renderer.hpp"
@@ -41,8 +42,15 @@ std::ostream& operator<<(std::ostream& os, const game::Snake& snake) {
                 os << 'F';
                 continue;
             }
-            const game::Direction dir = snake.boardState()(x, y);
-            switch (dir) {
+
+            if (std::get_if<game::Empty>(&snake.boardState()(x, y))) {
+                os << '.';
+                continue;
+            }
+
+            const game::SnakeBody& snake_body = std::get<game::SnakeBody>(snake.boardState()(x, y));
+            const game::Direction direction = snake_body.direction;
+            switch (direction) {
             case game::Direction::Up:
                 os << 'U';
                 break;
@@ -55,8 +63,6 @@ std::ostream& operator<<(std::ostream& os, const game::Snake& snake) {
             case game::Direction::Right:
                 os << 'R';
                 break;
-            default:
-                os << '.';
             }
         }
         os << '\n';
