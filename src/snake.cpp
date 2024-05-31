@@ -5,8 +5,8 @@
 
 namespace game {
 
-    constexpr int BOARD_INIT_WIDTH = 10;
-    constexpr int BOARD_INIT_HEIGHT = 10;
+    constexpr int BOARD_INIT_WIDTH = 20;
+    constexpr int BOARD_INIT_HEIGHT = 20;
 
     constexpr Pos SNAKE_INIT_HEAD = Pos(3, 1);
     constexpr Pos SNAKE_INIT_TAIL = Pos(1, 1);
@@ -27,8 +27,7 @@ namespace game {
     }
 
     void Snake::update() {
-        Pos new_head = head;
-        new_head += increments[static_cast<size_t>(headDir)];
+        Pos new_head = head + increments[static_cast<size_t>(headDir)];
 
         if (!board.inBounds(new_head) || board(new_head) != Direction::None) {
             snakeAlive = false;
@@ -42,8 +41,7 @@ namespace game {
         if (head == food) {
             food = foodGenerator.spawnFood(board);
         } else {
-            Pos new_tail = tail;
-            new_tail += increments[static_cast<Pos::Coord>(board(tail))];
+            Pos new_tail = tail + increments[static_cast<Pos::Coord>(board(tail))];
             board(tail) = Direction::None;
             tail = new_tail;
         }
@@ -54,8 +52,7 @@ namespace game {
     }
 
     void Snake::setDirection(const Direction dir) {
-        if (dir != headDir &&
-            validDirectionChange(headDir, dir)) {
+        if (validDirectionChange(headDir, dir)) {
             headDir = dir;
         }
     }

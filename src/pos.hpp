@@ -15,6 +15,7 @@ namespace game {
         Pos& operator=(const Pos& other);
 
         Pos& operator+=(const Pos& other);
+        Pos operator+(const Pos& other);
         bool operator==(const Pos& other) const;
     };
 }

@@ -17,6 +17,12 @@ namespace game {
         return *this;
     }
 
+    Pos Pos::operator+(const Pos& other) {
+        Pos new_pos{*this};
+        new_pos += other;
+        return new_pos;
+    }
+
     bool Pos::operator==(const Pos& other) const {
         return x == other.x && y == other.y;
     }
