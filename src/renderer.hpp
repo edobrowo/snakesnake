@@ -28,7 +28,7 @@ class Window;
 
 class Renderer {
 public:
-    Renderer();
+    Renderer() = default;
     void init(std::weak_ptr<Window> win);
 
     void render(const game::Snake& snake);

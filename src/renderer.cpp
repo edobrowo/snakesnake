@@ -15,8 +15,6 @@ RGB32 toRgb32(const Color& color) {
         static_cast<Uint8>(color.a() * 255)};
 }
 
-Renderer::Renderer() {}
-
 void Renderer::init(std::weak_ptr<Window> win) {
     std::shared_ptr<Window> window_ref = win.lock();
     if (!window_ref) {

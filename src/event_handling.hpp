@@ -20,7 +20,7 @@ namespace events {
          {SDLK_d, game::PlayerAction::moveRight},
          {SDLK_ESCAPE, game::PlayerAction::quit}};
 
-    game::PlayerAction processPlayerEvent(const SDL_Event& event) noexcept {
+    game::PlayerAction processPlayerEvent(const SDL_Event& event) {
         if (event.type == SDL_QUIT) {
             return game::PlayerAction::quit;
         } else if (event.type == SDL_KEYDOWN) {
