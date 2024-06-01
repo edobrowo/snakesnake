@@ -25,14 +25,6 @@ SDL_Surface* Window::surface() const {
     return SDL_GetWindowSurface(m_sdlWindow.get());
 }
 
-void Window::setRenderer(Renderer ren) {
-    m_renderer = std::make_unique<Renderer>(std::move(ren));
-}
-
-Renderer& Window::renderer() {
-    return *m_renderer.get();
-}
-
 size_t Window::width() const {
     return m_width;
 }

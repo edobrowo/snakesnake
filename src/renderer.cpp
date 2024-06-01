@@ -35,7 +35,7 @@ void Renderer::init(std::weak_ptr<Window> win) {
     m_sdlRenderer.reset(ren);
 }
 
-void Renderer::render(const game::Snake& snake) {
+void Renderer::render(const game::Snake& snake) const {
     clear(m_colors.board);
 
     int board_width = snake.board().width();
@@ -58,7 +58,7 @@ void Renderer::render(const game::Snake& snake) {
     SDL_RenderPresent(m_sdlRenderer.get());
 }
 
-void Renderer::drawRectArea(int x, int y, int w, int h, const Color& color) {
+void Renderer::drawRectArea(int x, int y, int w, int h, const Color& color) const {
     RGB32 rgb = toRgb32(color);
     SDL_SetRenderDrawColor(m_sdlRenderer.get(), rgb.r, rgb.g, rgb.b, rgb.a);
 
@@ -66,7 +66,7 @@ void Renderer::drawRectArea(int x, int y, int w, int h, const Color& color) {
     SDL_RenderFillRect(m_sdlRenderer.get(), &fillRect);
 }
 
-void Renderer::clear(Color color) {
+void Renderer::clear(Color color) const {
     RGB32 rgb = toRgb32(color);
     SDL_SetRenderDrawColor(m_sdlRenderer.get(), rgb.r, rgb.g, rgb.b, rgb.a);
 

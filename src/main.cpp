@@ -6,6 +6,7 @@
 
 #include "color.hpp"
 #include "event_handling.hpp"
+#include "renderer.hpp"
 #include "snake.hpp"
 #include "window.hpp"
 
@@ -15,21 +16,21 @@ struct WindowSettings {
     size_t height;
 };
 
-void init() {
+int main(int argc, char* argv[]) {
     int err = SDL_Init(SDL_INIT_VIDEO);
     if (err != 0) {
         std::string message = std::string("Failed to update SDL window") + SDL_GetError();
         throw std::runtime_error(message);
     }
-}
 
-void close() noexcept {
-    SDL_Quit();
-}
+    const WindowSettings windowSettings{"smake", 640, 640};
+    Window window{windowSettings.title, windowSettings.width, windowSettings.height};
+    Renderer renderer = Renderer();
 
-int main(int argc, char* argv[]) {
     try {
-        init();
+        window.init();
+        std::shared_ptr<Window> window_ref(&window, [](auto) {});
+        renderer.init(window_ref);
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << "\n";
         return 1;
@@ -37,21 +38,6 @@ int main(int argc, char* argv[]) {
 
     game::Snake snake = game::Snake();
 
-    const WindowSettings windowSettings{"smake", 640, 640};
-
-    Window window{windowSettings.title, windowSettings.width, windowSettings.height};
-    try {
-        window.init();
-        Renderer renderer = Renderer();
-        std::shared_ptr<Window> window_ref(&window, [](auto) {});
-        renderer.init(window_ref);
-        window.setRenderer(std::move(renderer));
-    } catch (const std::runtime_error& e) {
-        std::cerr << e.what() << "\n";
-        return 1;
-    }
-
-    Renderer& renderer = window.renderer();
     renderer.render(snake);
 
     SDL_Event event_buffer;
@@ -77,6 +63,5 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    close();
-    return 0;
+    SDL_Quit();
 }

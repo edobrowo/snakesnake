@@ -29,13 +29,13 @@ class Window;
 class Renderer {
 public:
     Renderer() = default;
-    void init(std::weak_ptr<Window> win);
 
-    void render(const game::Snake& snake);
+    void init(std::weak_ptr<Window> win);
+    void render(const game::Snake& snake) const;
 
 private:
-    void drawRectArea(int x, int y, int w, int h, const Color& color);
-    void clear(Color color);
+    void drawRectArea(int x, int y, int w, int h, const Color& color) const;
+    void clear(Color color) const;
 
     const Colors m_colors{Color(255, 255, 255), Color(0, 0, 0), Color(255, 255, 255)};
 
