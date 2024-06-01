@@ -6,8 +6,7 @@
 namespace game {
 
     Snake::Snake()
-        : m_settings{20, 20, Pos(3, 1), Pos(1, 1), Direction::Right},
-          m_board{Board<Cell>(m_settings.boardWidth, m_settings.boardHeight, Cell{Empty{}})},
+        : m_board{Board<Cell>(m_settings.boardWidth, m_settings.boardHeight, Cell{Empty{}})},
           m_head{m_settings.head},
           m_tail{m_settings.tail},
           m_headDirection{m_settings.direction},

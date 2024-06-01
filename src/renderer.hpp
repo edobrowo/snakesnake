@@ -18,7 +18,7 @@ public:
     }
 };
 
-struct ColorSettings {
+struct Colors {
     Color snake;
     Color board;
     Color food;
@@ -37,7 +37,7 @@ private:
     void drawRectArea(int x, int y, int w, int h, const Color& color);
     void clear(Color color);
 
-    const ColorSettings m_colors{Color(255, 255, 255), Color(0, 0, 0), Color(255, 255, 255)};
+    const Colors m_colors{Color(255, 255, 255), Color(0, 0, 0), Color(255, 255, 255)};
 
     std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> m_sdlRenderer;
     int m_windowWidth;

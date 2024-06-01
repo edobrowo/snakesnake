@@ -45,7 +45,8 @@ namespace game {
         void reset();
         static bool validDirectionChange(Direction old_dir, Direction new_dir);
 
-        SnakeInitSettings m_settings;
+        SnakeInitSettings m_settings{20, 20, Pos(3, 1), Pos(1, 1), Direction::Right};
+
         Board<Cell> m_board;
         Pos m_head;
         Pos m_tail;
@@ -56,7 +57,7 @@ namespace game {
 
         bool m_alive;
 
-        const std::vector<Pos> m_increments = {Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
+        const std::vector<Pos> m_increments{Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
     };
 }
 
