@@ -17,11 +17,17 @@ RGB32 toRgb32(const Color& color) {
 
 Renderer::Renderer() {}
 
-void Renderer::init(Window* win) {
-    m_windowWidth = win->width();
-    m_windowHeight = win->height();
+void Renderer::init(std::weak_ptr<Window> win) {
+    std::shared_ptr<Window> window_ref = win.lock();
+    if (!window_ref) {
+        std::string message = std::string("Invalid window weak_ptr");
+        throw std::runtime_error(message);
+    }
 
-    SDL_Renderer* ren = SDL_CreateRenderer(win->window(), -1, SDL_RENDERER_ACCELERATED);
+    m_windowWidth = window_ref->width();
+    m_windowHeight = window_ref->height();
+
+    SDL_Renderer* ren = SDL_CreateRenderer(window_ref->window(), -1, SDL_RENDERER_ACCELERATED);
 
     if (!ren) {
         std::string message = std::string("Failed to create SDL renderer: ") + SDL_GetError();

@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_timer.h>
 
 #include <iostream>
 #include <memory>
@@ -44,7 +43,8 @@ int main(int argc, char* argv[]) {
     try {
         window.init();
         Renderer renderer = Renderer();
-        renderer.init(&window);
+        std::shared_ptr<Window> window_ref(&window, [](auto) {});
+        renderer.init(window_ref);
         window.setRenderer(std::move(renderer));
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << "\n";

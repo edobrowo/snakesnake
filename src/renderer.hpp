@@ -29,7 +29,7 @@ class Window;
 class Renderer {
 public:
     Renderer();
-    void init(Window* win);
+    void init(std::weak_ptr<Window> win);
 
     void render(const game::Snake& snake);
 
