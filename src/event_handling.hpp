@@ -10,15 +10,18 @@
 
 namespace events {
     const std::map<SDL_Keycode, game::PlayerAction> EVENTS_TO_ACTIONS =
-        {{SDLK_UP, game::PlayerAction::moveUp},
-         {SDLK_w, game::PlayerAction::moveUp},
-         {SDLK_DOWN, game::PlayerAction::moveDown},
-         {SDLK_s, game::PlayerAction::moveDown},
-         {SDLK_LEFT, game::PlayerAction::moveLeft},
-         {SDLK_a, game::PlayerAction::moveLeft},
-         {SDLK_RIGHT, game::PlayerAction::moveRight},
-         {SDLK_d, game::PlayerAction::moveRight},
-         {SDLK_ESCAPE, game::PlayerAction::quit}};
+        {
+            {SDLK_UP, game::PlayerAction::moveUp},
+            {SDLK_w, game::PlayerAction::moveUp},
+            {SDLK_DOWN, game::PlayerAction::moveDown},
+            {SDLK_s, game::PlayerAction::moveDown},
+            {SDLK_LEFT, game::PlayerAction::moveLeft},
+            {SDLK_a, game::PlayerAction::moveLeft},
+            {SDLK_RIGHT, game::PlayerAction::moveRight},
+            {SDLK_d, game::PlayerAction::moveRight},
+            {SDLK_ESCAPE, game::PlayerAction::quit},
+            {SDLK_r, game::PlayerAction::restart},
+    };
 
     game::PlayerAction processPlayerEvent(const SDL_Event& event) {
         if (event.type == SDL_QUIT) {
@@ -44,6 +47,9 @@ namespace events {
             break;
         case game::PlayerAction::moveRight:
             snake.setDirection(game::Direction::Right);
+            break;
+        case game::PlayerAction::restart:
+            snake.restart();
             break;
         case game::PlayerAction::quit:
         case game::PlayerAction::invalid:

@@ -29,6 +29,7 @@ namespace game {
         Pos head;
         Pos tail;
         Direction direction;
+        float tilesPerSecond;
     };
 
     class Snake {
@@ -39,25 +40,26 @@ namespace game {
         void update();
         bool isAlive() const;
         void setDirection(Direction dir);
-        const Pos food() const;
+        Pos food() const;
+        float tilesPerSecond() const;
+        void restart();
 
     private:
         void reset();
         static bool validDirectionChange(Direction old_dir, Direction new_dir);
 
-        SnakeInitSettings m_settings{20, 20, Pos(3, 1), Pos(1, 1), Direction::Right};
+        const SnakeInitSettings m_settings{20, 20, Pos(3, 1), Pos(1, 1), Direction::Right, 10.0};
+        const std::vector<Pos> m_increments{Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
 
         Board<Cell> m_board;
         Pos m_head;
         Pos m_tail;
         Direction m_headDirection;
+        bool m_alive;
+        float m_tilesPerSecond;
 
         FoodGenerator m_foodGenerator;
         Pos m_food;
-
-        bool m_alive;
-
-        const std::vector<Pos> m_increments{Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
     };
 }
 

@@ -10,8 +10,9 @@ namespace game {
           m_head{m_settings.head},
           m_tail{m_settings.tail},
           m_headDirection{m_settings.direction},
-          m_foodGenerator{m_settings.boardWidth, m_settings.boardHeight},
-          m_alive{true} {
+          m_alive{true},
+          m_tilesPerSecond{m_settings.tilesPerSecond},
+          m_foodGenerator{m_settings.boardWidth, m_settings.boardHeight} {
         reset();
     }
 
@@ -51,8 +52,20 @@ namespace game {
         }
     }
 
-    const Pos Snake::food() const {
+    Pos Snake::food() const {
         return m_food;
+    }
+
+    float Snake::tilesPerSecond() const {
+        return m_tilesPerSecond;
+    }
+
+    void Snake::restart() {
+        m_head = m_settings.head;
+        m_tail = m_settings.tail;
+        m_headDirection = m_settings.direction;
+
+        reset();
     }
 
     void Snake::reset() {

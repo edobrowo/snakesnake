@@ -8,7 +8,8 @@ namespace game {
         moveLeft = 2,
         moveRight = 3,
         quit = 4,
-        invalid = 5,
+        restart = 5,
+        invalid = 100,
     };
 }
 
