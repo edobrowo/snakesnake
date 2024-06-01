@@ -22,22 +22,23 @@ class Renderer;
 
 class Window {
 public:
-    Window(const std::string& title, unsigned int width, unsigned int height);
+    Window(const std::string& title, const size_t width, const size_t height);
+    void init();
 
-    SDL_Window* windowPtr() const;
-    SDL_Surface* surfacePtr() const;
+    SDL_Window* window() const;
+    SDL_Surface* surface() const;
     void setRenderer(Renderer renderer);
-    Renderer& rendererRef();
-    int width() const;
-    int height() const;
+    Renderer& renderer();
+    size_t width() const;
+    size_t height() const;
 
 private:
-    std::string title;
-    unsigned int winWidth;
-    unsigned int winHeight;
+    std::string m_title;
+    size_t m_width;
+    size_t m_height;
 
-    std::unique_ptr<SDL_Window, SDL_WindowDeleter> sdlWindow;
-    std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<SDL_Window, SDL_WindowDeleter> m_sdlWindow;
+    std::unique_ptr<Renderer> m_renderer;
 };
 
 #endif

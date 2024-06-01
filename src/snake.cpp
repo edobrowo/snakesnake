@@ -5,74 +5,66 @@
 
 namespace game {
 
-    constexpr int BOARD_INIT_WIDTH = 20;
-    constexpr int BOARD_INIT_HEIGHT = 20;
-
-    constexpr Pos SNAKE_INIT_HEAD = Pos(3, 1);
-    constexpr Pos SNAKE_INIT_TAIL = Pos(1, 1);
-    constexpr Direction SNAKE_INIT_DIR = Direction::Right;
-
     Snake::Snake()
-        : board{Board<Cell>(BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT, Cell{Empty{}})},
-          head{SNAKE_INIT_HEAD},
-          tail{SNAKE_INIT_TAIL},
-          headDir{SNAKE_INIT_DIR},
-          foodGenerator{BOARD_INIT_WIDTH, BOARD_INIT_HEIGHT},
-          snakeAlive{true} {
+        : m_settings{20, 20, Pos(3, 1), Pos(1, 1), Direction::Right},
+          m_board{Board<Cell>(m_settings.boardWidth, m_settings.boardHeight, Cell{Empty{}})},
+          m_head{m_settings.head},
+          m_tail{m_settings.tail},
+          m_headDirection{m_settings.direction},
+          m_foodGenerator{m_settings.boardWidth, m_settings.boardHeight},
+          m_alive{true} {
         reset();
     }
 
-    const Board<Cell>& Snake::boardState() const {
-        return board;
+    const Board<Cell>& Snake::board() const {
+        return m_board;
     }
 
     void Snake::update() {
-        Pos new_head{head + increments[static_cast<size_t>(headDir)]};
+        Pos new_head{m_head + m_increments[static_cast<size_t>(m_headDirection)]};
 
-        if (!board.inBounds(new_head) || !std::get_if<game::Empty>(&board(new_head))) {
-            snakeAlive = false;
+        if (!m_board.inBounds(new_head) || !std::get_if<game::Empty>(&m_board(new_head))) {
+            m_alive = false;
             return;
         }
 
-        board(head) = headDir;
-        board(new_head) = headDir;
-        head = new_head;
+        m_board(m_head) = m_headDirection;
+        m_board(new_head) = m_headDirection;
+        m_head = new_head;
 
-        if (head == food) {
-            food = foodGenerator.spawnFood(board);
+        if (m_head == m_food) {
+            m_food = m_foodGenerator.spawnFood(m_board);
         } else {
-            SnakeBody snake_body = std::get<SnakeBody>(board(tail));
-            Pos new_tail{tail + increments[static_cast<Pos::Coord>(snake_body.direction)]};
-            board(tail) = Cell{Empty{}};
-            tail = new_tail;
+            SnakeBody snake_body = std::get<SnakeBody>(m_board(m_tail));
+            Pos new_tail{m_tail + m_increments[static_cast<Pos::Coord>(snake_body.direction())]};
+            m_board(m_tail) = Cell{Empty{}};
+            m_tail = new_tail;
         }
     }
 
     bool Snake::isAlive() const {
-        return snakeAlive;
+        return m_alive;
     }
 
-    void Snake::setDirection(const Direction dir) {
-        if (validDirectionChange(headDir, dir)) {
-            headDir = dir;
+    void Snake::setDirection(Direction dir) {
+        if (validDirectionChange(m_headDirection, dir)) {
+            m_headDirection = dir;
         }
     }
 
-    const Pos Snake::foodPos() const {
-        return food;
+    const Pos Snake::food() const {
+        return m_food;
     }
 
     void Snake::reset() {
-        assert(head.x > tail.x && head.x < board.width() && head.y == tail.y && tail.y > 0);
+        m_board.fill(Cell{Empty{}});
 
-        board.fill(Cell{Empty{}});
-
-        for (Pos::Coord x = tail.x; x <= head.x; ++x) {
-            board(x, head.y) = SNAKE_INIT_DIR;
+        for (Pos::Coord x = m_tail.x(); x <= m_head.x(); ++x) {
+            m_board(x, m_head.y()) = m_settings.direction;
         }
 
-        snakeAlive = true;
-        food = foodGenerator.spawnFood(board);
+        m_alive = true;
+        m_food = m_foodGenerator.spawnFood(m_board);
     }
 
     bool Snake::validDirectionChange(Direction old_dir, Direction new_dir) {
@@ -106,4 +98,41 @@ namespace game {
         } while (!std::get_if<game::Empty>(&board(sample_pos)));
         return sample_pos;
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const game::Snake& snake) {
+    int h = snake.board().height();
+    int w = snake.board().width();
+    for (game::Pos::Coord y = 0; y < h; ++y) {
+        for (game::Pos::Coord x = 0; x < w; ++x) {
+            if (game::Pos(x, y) == snake.food()) {
+                os << 'F';
+                continue;
+            }
+
+            if (std::get_if<game::Empty>(&snake.board()(x, y))) {
+                os << '.';
+                continue;
+            }
+
+            const game::SnakeBody& snake_body = std::get<game::SnakeBody>(snake.board()(x, y));
+            const game::Direction direction = snake_body.direction();
+            switch (direction) {
+            case game::Direction::Up:
+                os << 'U';
+                break;
+            case game::Direction::Down:
+                os << 'D';
+                break;
+            case game::Direction::Left:
+                os << 'L';
+                break;
+            case game::Direction::Right:
+                os << 'R';
+                break;
+            }
+        }
+        os << '\n';
+    }
+    return os;
 }

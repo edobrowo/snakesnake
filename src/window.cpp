@@ -1,41 +1,42 @@
 #include "window.hpp"
 
-Window::Window(const std::string& title, unsigned int width, unsigned int height)
-    : winWidth{width},
-      winHeight{height} {
-    SDL_Window* win = SDL_CreateWindow(title.c_str(),
+Window::Window(const std::string& title, const size_t width, const size_t height)
+    : m_title{title}, m_width{width}, m_height{height} {}
+
+void Window::init() {
+    SDL_Window* win = SDL_CreateWindow(m_title.c_str(),
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       winWidth, winHeight, 0);
+                                       m_width, m_height, 0);
 
     if (!win) {
         std::string message = std::string("Failed to create SDL window") + SDL_GetError();
         throw std::runtime_error(message);
     }
 
-    sdlWindow.reset(win);
+    m_sdlWindow.reset(win);
 }
 
-SDL_Window* Window::windowPtr() const {
-    return sdlWindow.get();
+SDL_Window* Window::window() const {
+    return m_sdlWindow.get();
 }
 
-SDL_Surface* Window::surfacePtr() const {
-    return SDL_GetWindowSurface(sdlWindow.get());
+SDL_Surface* Window::surface() const {
+    return SDL_GetWindowSurface(m_sdlWindow.get());
 }
 
 void Window::setRenderer(Renderer ren) {
-    renderer = std::make_unique<Renderer>(std::move(ren));
+    m_renderer = std::make_unique<Renderer>(std::move(ren));
 }
 
-Renderer& Window::rendererRef() {
-    return *renderer.get();
+Renderer& Window::renderer() {
+    return *m_renderer.get();
 }
 
-int Window::width() const {
-    return winWidth;
+size_t Window::width() const {
+    return m_width;
 }
 
-int Window::height() const {
-    return winHeight;
+size_t Window::height() const {
+    return m_height;
 }

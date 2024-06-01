@@ -14,10 +14,16 @@ public:
     Color(const Color& other);
     Color operator=(const Color& other);
 
-    float r;
-    float g;
-    float b;
-    float a;
+    float r() const;
+    float g() const;
+    float b() const;
+    float a() const;
+
+private:
+    float m_red;
+    float m_green;
+    float m_blue;
+    float m_alpha;
 };
 
 #endif

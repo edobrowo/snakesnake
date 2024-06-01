@@ -23,31 +23,40 @@ namespace game {
         mutable Distribution dist;
     };
 
+    struct SnakeInitSettings {
+        Board<Cell>::Size boardWidth;
+        Board<Cell>::Size boardHeight;
+        Pos head;
+        Pos tail;
+        Direction direction;
+    };
+
     class Snake {
     public:
         Snake();
 
-        const Board<Cell>& boardState() const;
+        const Board<Cell>& board() const;
         void update();
         bool isAlive() const;
-        void setDirection(const Direction dir);
-        const Pos foodPos() const;
+        void setDirection(Direction dir);
+        const Pos food() const;
 
     private:
         void reset();
         static bool validDirectionChange(Direction old_dir, Direction new_dir);
 
-        Board<Cell> board;
-        Pos head;
-        Pos tail;
-        Direction headDir;
+        SnakeInitSettings m_settings;
+        Board<Cell> m_board;
+        Pos m_head;
+        Pos m_tail;
+        Direction m_headDirection;
 
-        FoodGenerator foodGenerator;
-        Pos food;
+        FoodGenerator m_foodGenerator;
+        Pos m_food;
 
-        bool snakeAlive;
+        bool m_alive;
 
-        const std::vector<Pos> increments = {Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
+        const std::vector<Pos> m_increments = {Pos(0, -1), Pos(0, 1), Pos(-1, 0), Pos(1, 0)};
     };
 }
 

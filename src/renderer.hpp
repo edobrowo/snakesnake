@@ -18,11 +18,18 @@ public:
     }
 };
 
+struct ColorSettings {
+    Color snake;
+    Color board;
+    Color food;
+};
+
 class Window;
 
 class Renderer {
 public:
-    Renderer(Window* win);
+    Renderer();
+    void init(Window* win);
 
     void render(const game::Snake& snake);
 
@@ -30,12 +37,11 @@ private:
     void drawRectArea(int x, int y, int w, int h, const Color& color);
     void clear(Color color);
 
-    std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> renderer;
-    int windowWidth;
-    int windowHeight;
+    const ColorSettings m_colors{Color(255, 255, 255), Color(0, 0, 0), Color(255, 255, 255)};
 
-    Color snakeColor;
-    Color boardColor;
+    std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> m_sdlRenderer;
+    int m_windowWidth;
+    int m_windowHeight;
 };
 
 #endif

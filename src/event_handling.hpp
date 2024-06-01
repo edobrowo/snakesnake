@@ -31,7 +31,7 @@ namespace events {
         return game::PlayerAction::invalid;
     }
 
-    void performAction(const game::PlayerAction action, game::Snake& snake) {
+    void performAction(game::PlayerAction action, game::Snake& snake) {
         switch (action) {
         case game::PlayerAction::moveUp:
             snake.setDirection(game::Direction::Up);

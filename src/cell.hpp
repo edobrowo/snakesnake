@@ -6,15 +6,17 @@
 #include "direction.hpp"
 
 namespace game {
-    class Empty {
-    public:
-        Empty() {}
-    };
+    class Empty {};
 
     class SnakeBody {
     public:
-        SnakeBody(Direction direction) : direction{direction} {}
-        Direction direction;
+        SnakeBody(const Direction direction) : m_direction{direction} {}
+        Direction direction() const {
+            return m_direction;
+        }
+
+    private:
+        Direction m_direction;
     };
 
     using Cell = std::variant<SnakeBody, Empty>;
