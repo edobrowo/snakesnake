@@ -35,7 +35,16 @@ Color::Color(const Color& other)
     : m_red{other.m_red}, m_green{other.m_green}, m_blue{other.m_blue}, m_alpha{other.m_alpha} {}
 
 Color Color::operator=(const Color& other) {
-    return Color(other);
+    if (this == &other) {
+        return *this;
+    }
+
+    m_red = other.r();
+    m_green = other.g();
+    m_blue = other.b();
+    m_alpha = other.a();
+
+    return *this;
 }
 
 float Color::r() const {
